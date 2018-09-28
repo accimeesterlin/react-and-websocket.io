@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const bodyParser = require('body-parser');
+
 
 /*
 
@@ -14,13 +16,20 @@ const path = require('path');
         Example: "engines": {
                     "node": "9.2.1"
                 }
-    6- 
+    6- fix start your command
 */
 
 const PORT = process.env.PORT || 9010; // required
 
 
-app.use(express.static(path.join(__dirname, 'client/build'))); // required
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'client/build')));
+} // required
 
 
 app.get('/', (req, res) => {
@@ -29,6 +38,18 @@ app.get('/', (req, res) => {
         message: 'Server is up and running!'
     });
 });
+
+
+app.post('/add', (req, res) => {
+    const data = req.body;
+
+    console.log('Data: ', data);
+
+    res.json({
+        message: 'Hello World'
+    });
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server is starting on port ${PORT}`);
