@@ -1,5 +1,7 @@
-const express = require('express');
-const app = express();
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
 const path = require('path');
 const bodyParser = require('body-parser');
 
@@ -43,14 +45,28 @@ app.get('/', (req, res) => {
 app.post('/add', (req, res) => {
     const data = req.body;
 
-    console.log('Data: ', data);
 
-    res.json({
-        message: 'Hello World'
-    });
+
 });
 
 
-app.listen(PORT, () => {
+io.on('connection', function (socket) {
+    console.log('a user connected');
+
+
+    socket.on('chat message', function (msg) {
+        console.log('Value: ', msg);
+        io.emit('chat message', msg);
+    });
+
+
+    socket.on('disconnect', function () {
+        console.log('user disconnected');
+    });
+
+
+});
+
+http.listen(PORT, () => {
     console.log(`Server is starting on port ${PORT}`);
 });
